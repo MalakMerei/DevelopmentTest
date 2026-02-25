@@ -1,0 +1,635 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DevelopmentTestDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="GLTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="GLTransactionLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GLTransactionId" Type="int" Nullable="false" />
+          <Property Name="Account" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Debit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Credit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Invoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SalesOrderId" Type="int" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="NetTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TaxTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="GrossTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InvoiceLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceId" Type="int" Nullable="false" />
+          <Property Name="ItemId" Type="int" Nullable="false" />
+          <Property Name="Qty" Type="int" Nullable="false" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="LineTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TaxAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Item">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="OnHandQuantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SalesOrder">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SalesOrderLine">
+          <Key>
+            <PropertyRef Name="SalesOrderId" />
+            <PropertyRef Name="ItemId" />
+          </Key>
+          <Property Name="SalesOrderId" Type="int" Nullable="false" />
+          <Property Name="ItemId" Type="int" Nullable="false" />
+          <Property Name="Qty" Type="int" Nullable="false" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_GLTransactionLine_GLTransaction">
+          <End Role="GLTransaction" Type="Self.GLTransaction" Multiplicity="1" />
+          <End Role="GLTransactionLine" Type="Self.GLTransactionLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GLTransaction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="GLTransactionLine">
+              <PropertyRef Name="GLTransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Invoice_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Invoice" Type="Self.Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Invoice_SalesOrder">
+          <End Role="SalesOrder" Type="Self.SalesOrder" Multiplicity="1" />
+          <End Role="Invoice" Type="Self.Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SalesOrder">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="SalesOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InvoiceLine_Invoice">
+          <End Role="Invoice" Type="Self.Invoice" Multiplicity="1" />
+          <End Role="InvoiceLine" Type="Self.InvoiceLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceLine">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InvoiceLine_Item">
+          <End Role="Item" Type="Self.Item" Multiplicity="1" />
+          <End Role="InvoiceLine" Type="Self.InvoiceLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceLine">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payment_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrder_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="SalesOrder" Type="Self.SalesOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrder">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrderLine_Item">
+          <End Role="Item" Type="Self.Item" Multiplicity="1" />
+          <End Role="SalesOrderLine" Type="Self.SalesOrderLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrderLine">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrderLine_SalesOrder">
+          <End Role="SalesOrder" Type="Self.SalesOrder" Multiplicity="1" />
+          <End Role="SalesOrderLine" Type="Self.SalesOrderLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SalesOrder">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrderLine">
+              <PropertyRef Name="SalesOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DevelopmentTestDbModelStoreContainer">
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GLTransaction" EntityType="Self.GLTransaction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GLTransactionLine" EntityType="Self.GLTransactionLine" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InvoiceLine" EntityType="Self.InvoiceLine" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Item" EntityType="Self.Item" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Payment" EntityType="Self.Payment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SalesOrder" EntityType="Self.SalesOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SalesOrderLine" EntityType="Self.SalesOrderLine" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_GLTransactionLine_GLTransaction" Association="Self.FK_GLTransactionLine_GLTransaction">
+            <End Role="GLTransaction" EntitySet="GLTransaction" />
+            <End Role="GLTransactionLine" EntitySet="GLTransactionLine" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Invoice_Customer" Association="Self.FK_Invoice_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Invoice" EntitySet="Invoice" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Invoice_SalesOrder" Association="Self.FK_Invoice_SalesOrder">
+            <End Role="SalesOrder" EntitySet="SalesOrder" />
+            <End Role="Invoice" EntitySet="Invoice" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoiceLine_Invoice" Association="Self.FK_InvoiceLine_Invoice">
+            <End Role="Invoice" EntitySet="Invoice" />
+            <End Role="InvoiceLine" EntitySet="InvoiceLine" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoiceLine_Item" Association="Self.FK_InvoiceLine_Item">
+            <End Role="Item" EntitySet="Item" />
+            <End Role="InvoiceLine" EntitySet="InvoiceLine" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payment_Customer" Association="Self.FK_Payment_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Payment" EntitySet="Payment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrder_Customer" Association="Self.FK_SalesOrder_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="SalesOrder" EntitySet="SalesOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrderLine_Item" Association="Self.FK_SalesOrderLine_Item">
+            <End Role="Item" EntitySet="Item" />
+            <End Role="SalesOrderLine" EntitySet="SalesOrderLine" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrderLine_SalesOrder" Association="Self.FK_SalesOrderLine_SalesOrder">
+            <End Role="SalesOrder" EntitySet="SalesOrder" />
+            <End Role="SalesOrderLine" EntitySet="SalesOrderLine" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DevelopmentTestDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="DevelopmentTestDbEntities" annotation:LazyLoadingEnabled="true" >
+          <EntitySet Name="Customers" EntityType="DevelopmentTestDbModel.Customer" />
+          <EntitySet Name="GLTransactions" EntityType="DevelopmentTestDbModel.GLTransaction" />
+          <EntitySet Name="GLTransactionLines" EntityType="DevelopmentTestDbModel.GLTransactionLine" />
+          <EntitySet Name="Invoices" EntityType="DevelopmentTestDbModel.Invoice" />
+          <EntitySet Name="InvoiceLines" EntityType="DevelopmentTestDbModel.InvoiceLine" />
+          <EntitySet Name="Items" EntityType="DevelopmentTestDbModel.Item" />
+          <EntitySet Name="Payments" EntityType="DevelopmentTestDbModel.Payment" />
+          <EntitySet Name="SalesOrders" EntityType="DevelopmentTestDbModel.SalesOrder" />
+          <EntitySet Name="SalesOrderLines" EntityType="DevelopmentTestDbModel.SalesOrderLine" />
+          <AssociationSet Name="FK_Invoice_Customer" Association="DevelopmentTestDbModel.FK_Invoice_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Invoice" EntitySet="Invoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payment_Customer" Association="DevelopmentTestDbModel.FK_Payment_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Payment" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrder_Customer" Association="DevelopmentTestDbModel.FK_SalesOrder_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="SalesOrder" EntitySet="SalesOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GLTransactionLine_GLTransaction" Association="DevelopmentTestDbModel.FK_GLTransactionLine_GLTransaction">
+            <End Role="GLTransaction" EntitySet="GLTransactions" />
+            <End Role="GLTransactionLine" EntitySet="GLTransactionLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Invoice_SalesOrder" Association="DevelopmentTestDbModel.FK_Invoice_SalesOrder">
+            <End Role="SalesOrder" EntitySet="SalesOrders" />
+            <End Role="Invoice" EntitySet="Invoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoiceLine_Invoice" Association="DevelopmentTestDbModel.FK_InvoiceLine_Invoice">
+            <End Role="Invoice" EntitySet="Invoices" />
+            <End Role="InvoiceLine" EntitySet="InvoiceLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoiceLine_Item" Association="DevelopmentTestDbModel.FK_InvoiceLine_Item">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="InvoiceLine" EntitySet="InvoiceLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrderLine_Item" Association="DevelopmentTestDbModel.FK_SalesOrderLine_Item">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="SalesOrderLine" EntitySet="SalesOrderLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SalesOrderLine_SalesOrder" Association="DevelopmentTestDbModel.FK_SalesOrderLine_SalesOrder">
+            <End Role="SalesOrder" EntitySet="SalesOrders" />
+            <End Role="SalesOrderLine" EntitySet="SalesOrderLines" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Invoices" Relationship="DevelopmentTestDbModel.FK_Invoice_Customer" FromRole="Customer" ToRole="Invoice" />
+          <NavigationProperty Name="Payments" Relationship="DevelopmentTestDbModel.FK_Payment_Customer" FromRole="Customer" ToRole="Payment" />
+          <NavigationProperty Name="SalesOrders" Relationship="DevelopmentTestDbModel.FK_SalesOrder_Customer" FromRole="Customer" ToRole="SalesOrder" />
+        </EntityType>
+        <EntityType Name="GLTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="GLTransactionLines" Relationship="DevelopmentTestDbModel.FK_GLTransactionLine_GLTransaction" FromRole="GLTransaction" ToRole="GLTransactionLine" />
+        </EntityType>
+        <EntityType Name="GLTransactionLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GLTransactionId" Type="Int32" Nullable="false" />
+          <Property Name="Account" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Debit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Credit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="GLTransaction" Relationship="DevelopmentTestDbModel.FK_GLTransactionLine_GLTransaction" FromRole="GLTransactionLine" ToRole="GLTransaction" />
+        </EntityType>
+        <EntityType Name="Invoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SalesOrderId" Type="Int32" Nullable="false" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="NetTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TaxTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="GrossTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Customer" Relationship="DevelopmentTestDbModel.FK_Invoice_Customer" FromRole="Invoice" ToRole="Customer" />
+          <NavigationProperty Name="SalesOrder" Relationship="DevelopmentTestDbModel.FK_Invoice_SalesOrder" FromRole="Invoice" ToRole="SalesOrder" />
+          <NavigationProperty Name="InvoiceLines" Relationship="DevelopmentTestDbModel.FK_InvoiceLine_Invoice" FromRole="Invoice" ToRole="InvoiceLine" />
+        </EntityType>
+        <EntityType Name="InvoiceLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceId" Type="Int32" Nullable="false" />
+          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="Qty" Type="Int32" Nullable="false" />
+          <Property Name="UnitPrice" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="LineTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TaxAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Invoice" Relationship="DevelopmentTestDbModel.FK_InvoiceLine_Invoice" FromRole="InvoiceLine" ToRole="Invoice" />
+          <NavigationProperty Name="Item" Relationship="DevelopmentTestDbModel.FK_InvoiceLine_Item" FromRole="InvoiceLine" ToRole="Item" />
+        </EntityType>
+        <EntityType Name="Item">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="OnHandQuantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="InvoiceLines" Relationship="DevelopmentTestDbModel.FK_InvoiceLine_Item" FromRole="Item" ToRole="InvoiceLine" />
+          <NavigationProperty Name="SalesOrderLines" Relationship="DevelopmentTestDbModel.FK_SalesOrderLine_Item" FromRole="Item" ToRole="SalesOrderLine" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Customer" Relationship="DevelopmentTestDbModel.FK_Payment_Customer" FromRole="Payment" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="SalesOrder">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Customer" Relationship="DevelopmentTestDbModel.FK_SalesOrder_Customer" FromRole="SalesOrder" ToRole="Customer" />
+          <NavigationProperty Name="Invoices" Relationship="DevelopmentTestDbModel.FK_Invoice_SalesOrder" FromRole="SalesOrder" ToRole="Invoice" />
+          <NavigationProperty Name="SalesOrderLines" Relationship="DevelopmentTestDbModel.FK_SalesOrderLine_SalesOrder" FromRole="SalesOrder" ToRole="SalesOrderLine" />
+        </EntityType>
+        <EntityType Name="SalesOrderLine">
+          <Key>
+            <PropertyRef Name="SalesOrderId" />
+            <PropertyRef Name="ItemId" />
+          </Key>
+          <Property Name="SalesOrderId" Type="Int32" Nullable="false" />
+          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="Qty" Type="Int32" Nullable="false" />
+          <Property Name="UnitPrice" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Item" Relationship="DevelopmentTestDbModel.FK_SalesOrderLine_Item" FromRole="SalesOrderLine" ToRole="Item" />
+          <NavigationProperty Name="SalesOrder" Relationship="DevelopmentTestDbModel.FK_SalesOrderLine_SalesOrder" FromRole="SalesOrderLine" ToRole="SalesOrder" />
+        </EntityType>
+        <Association Name="FK_Invoice_Customer">
+          <End Type="DevelopmentTestDbModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.Invoice" Role="Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payment_Customer">
+          <End Type="DevelopmentTestDbModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.Payment" Role="Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrder_Customer">
+          <End Type="DevelopmentTestDbModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.SalesOrder" Role="SalesOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrder">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GLTransactionLine_GLTransaction">
+          <End Type="DevelopmentTestDbModel.GLTransaction" Role="GLTransaction" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.GLTransactionLine" Role="GLTransactionLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GLTransaction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="GLTransactionLine">
+              <PropertyRef Name="GLTransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Invoice_SalesOrder">
+          <End Type="DevelopmentTestDbModel.SalesOrder" Role="SalesOrder" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.Invoice" Role="Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SalesOrder">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="SalesOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InvoiceLine_Invoice">
+          <End Type="DevelopmentTestDbModel.Invoice" Role="Invoice" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.InvoiceLine" Role="InvoiceLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceLine">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InvoiceLine_Item">
+          <End Type="DevelopmentTestDbModel.Item" Role="Item" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.InvoiceLine" Role="InvoiceLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceLine">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrderLine_Item">
+          <End Type="DevelopmentTestDbModel.Item" Role="Item" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.SalesOrderLine" Role="SalesOrderLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrderLine">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SalesOrderLine_SalesOrder">
+          <End Type="DevelopmentTestDbModel.SalesOrder" Role="SalesOrder" Multiplicity="1" />
+          <End Type="DevelopmentTestDbModel.SalesOrderLine" Role="SalesOrderLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SalesOrder">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SalesOrderLine">
+              <PropertyRef Name="SalesOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DevelopmentTestDbModelStoreContainer" CdmEntityContainer="DevelopmentTestDbEntities" >
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GLTransactions">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.GLTransaction">
+              <MappingFragment StoreEntitySet="GLTransaction">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GLTransactionLines">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.GLTransactionLine">
+              <MappingFragment StoreEntitySet="GLTransactionLine">
+                <ScalarProperty Name="Credit" ColumnName="Credit" />
+                <ScalarProperty Name="Debit" ColumnName="Debit" />
+                <ScalarProperty Name="Account" ColumnName="Account" />
+                <ScalarProperty Name="GLTransactionId" ColumnName="GLTransactionId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Invoices">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.Invoice">
+              <MappingFragment StoreEntitySet="Invoice">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="GrossTotal" ColumnName="GrossTotal" />
+                <ScalarProperty Name="TaxTotal" ColumnName="TaxTotal" />
+                <ScalarProperty Name="NetTotal" ColumnName="NetTotal" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="SalesOrderId" ColumnName="SalesOrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceLines">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.InvoiceLine">
+              <MappingFragment StoreEntitySet="InvoiceLine">
+                <ScalarProperty Name="TaxAmount" ColumnName="TaxAmount" />
+                <ScalarProperty Name="LineTotal" ColumnName="LineTotal" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Items">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.Item">
+              <MappingFragment StoreEntitySet="Item">
+                <ScalarProperty Name="OnHandQuantity" ColumnName="OnHandQuantity" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Payments">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.Payment">
+              <MappingFragment StoreEntitySet="Payment">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SalesOrders">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.SalesOrder">
+              <MappingFragment StoreEntitySet="SalesOrder">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SalesOrderLines">
+            <EntityTypeMapping TypeName="DevelopmentTestDbModel.SalesOrderLine">
+              <MappingFragment StoreEntitySet="SalesOrderLine">
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="SalesOrderId" ColumnName="SalesOrderId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
