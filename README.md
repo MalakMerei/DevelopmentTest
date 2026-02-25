@@ -1,3 +1,6 @@
+I included only the database:
+
+
 CREATE TABLE dbo.Customer (
     Id   INT IDENTITY(1,1) NOT NULL,
     Name NVARCHAR(200) NOT NULL,
